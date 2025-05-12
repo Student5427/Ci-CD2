@@ -46,12 +46,31 @@ jobs:
 
     - name: Install dependencies
       run: |
-        # Устанавливаем только основные зависимости без тестовых
         poetry lock --no-interaction
         poetry install --no-interaction --no-root
-        
-        # Отдельно устанавливаем тестовые зависимости с явным указанием версий
-        poetry add pytest@^7.4.0 pytest-cov@^4.1.0 alembic@^1.11.3 --group dev
+        poetry add pytest@^7.4.0 pytest-cov@^4.1.0 alembic@^1.11.3 python-dotenv@^1.0.0 --group dev
+
+    - name: Create .env file
+      run: |
+        cat << EOF > .env
+        SECRET_KEY=dummy-secret-key-for-tests
+        ALGORITHM=HS256
+        ACCESS_TOKEN_EXPIRE_MINUTES=30
+        EMAIL_SENDER=noreply@test.com
+        SMTP_SERVER=smtp.test.com
+        SMTP_PORT=587
+        SMTP_USERNAME=user@test.com
+        SMTP_PASSWORD=password
+        POSTGRES_USER=test_user
+        POSTGRES_PASSWORD=test_pass
+        POSTGRES_HOST=localhost
+        POSTGRES_PORT=5432
+        POSTGRES_DB=test_db
+        FIRST_SUPERUSER=admin@test.com
+        FIRST_SUPERUSER_PASSWORD=password
+        USERS_OPEN_REGISTRATION=True
+        TESTING=True
+        EOF
 
     - name: Wait for PostgreSQL
       run: |
@@ -71,7 +90,7 @@ jobs:
         DATABASE_URL: "postgresql://test_user:test_pass@localhost:5432/test_db"
         PYTHONPATH: "${{ github.workspace }}"
       run: |
-        poetry run alembic upgrade head
+        poetry run python -c "from dotenv import load_dotenv; load_dotenv(); from alembic.config import Config; from alembic import command; alembic_cfg = Config('alembic.ini'); command.upgrade(alembic_cfg, 'head')"
 
     - name: Run tests
       env:
