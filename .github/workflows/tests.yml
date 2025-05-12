@@ -46,9 +46,12 @@ jobs:
 
     - name: Install dependencies
       run: |
+        # Устанавливаем только основные зависимости без тестовых
         poetry lock --no-interaction
-        poetry install --sync --no-interaction
-        poetry add alembic pytest pytest-cov --group dev
+        poetry install --no-interaction --no-root
+        
+        # Отдельно устанавливаем тестовые зависимости с явным указанием версий
+        poetry add pytest@^7.4.0 pytest-cov@^4.1.0 alembic@^1.11.3 --group dev
 
     - name: Wait for PostgreSQL
       run: |
