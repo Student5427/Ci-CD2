@@ -47,8 +47,8 @@ jobs:
     - name: Install dependencies
       run: |
         poetry lock --no-interaction
-        poetry install --sync --no-interaction --with test
-        poetry show
+        poetry install --sync --no-interaction
+        poetry add alembic pytest pytest-cov --group dev
 
     - name: Wait for PostgreSQL
       run: |
