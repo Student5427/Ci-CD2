@@ -31,40 +31,39 @@ jobs:
         python-version: '3.11'
 
     - name: Install Poetry
-      run: pipx install poetry
+      uses: snok/install-poetry@v1
+      with:
+        virtualenvs-create: true
+        virtualenvs-in-project: true
+
+    - name: Update poetry.lock
+      run: poetry lock --no-update
 
     - name: Install dependencies
-      run: poetry install --no-interaction
+      run: poetry install --no-interaction --no-root
+
+    - name: Install project
+      run: poetry install --only-root
 
     - name: Run tests
       env:
-        # Обязательные настройки
         SECRET_KEY: "dummy-secret-key-for-tests"
         ALGORITHM: "HS256"
         ACCESS_TOKEN_EXPIRE_MINUTES: "30"
-        
-        # Настройки почты
         EMAIL_SENDER: "noreply@test.com"
         SMTP_SERVER: "smtp.test.com"
         SMTP_PORT: "587"
         SMTP_USERNAME: "user@test.com"
         SMTP_PASSWORD: "password"
-        
-        # Настройки базы данных (должны совпадать с service postgres выше)
         POSTGRES_USER: "test_user"
         POSTGRES_PASSWORD: "test_pass"
         POSTGRES_HOST: "localhost"
         POSTGRES_PORT: "5432"
         POSTGRES_DB: "test_db"
-        
-        # Дополнительные настройки (если есть в вашем Settings)
         FIRST_SUPERUSER: "admin@test.com"
         FIRST_SUPERUSER_PASSWORD: "password"
         USERS_OPEN_REGISTRATION: "True"
-        
-        # Настройки для тестов
         TESTING: "True"
         PYTHONPATH: "${{ github.workspace }}"
-        
       run: |
         poetry run pytest --cov -v
