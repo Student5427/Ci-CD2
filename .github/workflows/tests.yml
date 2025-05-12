@@ -20,6 +20,9 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+        # Добавляем volumes для сохранения данных между шагами
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
 
     steps:
     - name: Checkout code
@@ -44,10 +47,22 @@ jobs:
           .venv
         key: poetry-${{ hashFiles('poetry.lock') }}
 
-    - name: Resolve dependencies
+    - name: Install dependencies
       run: |
         poetry lock --no-interaction
         poetry install --sync --no-interaction
+        # Убедимся, что alembic установлен
+        poetry add alembic
+
+    - name: Wait for PostgreSQL
+      run: sleep 5  # Даем PostgreSQL время для полного запуска
+
+    - name: Apply migrations
+      env:
+        DATABASE_URL: "postgresql://test_user:test_pass@localhost:5432/test_db"
+        PYTHONPATH: "${{ github.workspace }}"
+      run: |
+        poetry run alembic upgrade head
 
     - name: Run tests
       env:
@@ -71,3 +86,7 @@ jobs:
         PYTHONPATH: "${{ github.workspace }}"
       run: |
         poetry run pytest --cov -v
+
+# Добавляем volumes для сохранения данных между шагами
+volumes:
+  postgres_data:
