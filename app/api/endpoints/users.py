@@ -98,7 +98,7 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def create_user(
     user: UserCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
 ):
-    with tracer.start_as_current_span("create_user_operation") as parent_span:
+    with tracer.start_as_current_span("create_user_operation"):
         with tracer.start_as_current_span("check_email_exists"):
             db_user = crud_user.get_user_by_email(db=db, email=user.email)
             if db_user:
