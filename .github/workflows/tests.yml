@@ -50,6 +50,19 @@ jobs:
         poetry install --no-interaction --no-root
         poetry add pytest@^7.4.0 pytest-cov@^4.1.0 alembic@^1.11.3 python-dotenv@^1.0.0 --group dev
 
+    - name: Create .env file for migrations
+      run: |
+        cat << EOF > .env
+        SECRET_KEY=dummy-secret-key-for-tests
+        EMAIL_SENDER=no-reply@test.com
+        SMTP_SERVER=smtp.test.com
+        POSTGRES_USER=test_user
+        POSTGRES_PASSWORD=test_pass
+        POSTGRES_HOST=localhost
+        POSTGRES_PORT=5432
+        POSTGRES_DB=test_db
+        EOF
+
     - name: Wait for PostgreSQL
       run: |
         for i in {1..10}; do
@@ -65,43 +78,25 @@ jobs:
 
     - name: Apply migrations
       env:
-        # Только обязательные переменные из вашего Settings класса
-        SECRET_KEY: "dummy-secret-key-for-tests"
-        POSTGRES_USER: "test_user"
-        POSTGRES_PASSWORD: "test_pass"
-        POSTGRES_HOST: "localhost"
-        POSTGRES_PORT: "5432"
-        POSTGRES_DB: "test_db"
         PYTHONPATH: "${{ github.workspace }}"
       run: |
-        # Создаем временный .env файл только с необходимыми переменными
-        echo "SECRET_KEY=$SECRET_KEY" > .env
-        echo "POSTGRES_USER=$POSTGRES_USER" >> .env
-        echo "POSTGRES_PASSWORD=$POSTGRES_PASSWORD" >> .env
-        echo "POSTGRES_HOST=$POSTGRES_HOST" >> .env
-        echo "POSTGRES_PORT=$POSTGRES_PORT" >> .env
-        echo "POSTGRES_DB=$POSTGRES_DB" >> .env
-        
-        # Запускаем миграции с явной передачей DATABASE_URL
-        DATABASE_URL="postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST:$POSTGRES_PORT/$POSTGRES_DB"
         poetry run alembic upgrade head
 
     - name: Run tests
       env:
-        # Все тестовые переменные
         SECRET_KEY: "dummy-secret-key-for-tests"
-        ALGORITHM: "HS256"
-        ACCESS_TOKEN_EXPIRE_MINUTES: "30"
         EMAIL_SENDER: "noreply@test.com"
         SMTP_SERVER: "smtp.test.com"
-        SMTP_PORT: "587"
-        SMTP_USERNAME: "user@test.com"
-        SMTP_PASSWORD: "password"
         POSTGRES_USER: "test_user"
         POSTGRES_PASSWORD: "test_pass"
         POSTGRES_HOST: "localhost"
         POSTGRES_PORT: "5432"
         POSTGRES_DB: "test_db"
+        ALGORITHM: "HS256"
+        ACCESS_TOKEN_EXPIRE_MINUTES: "30"
+        SMTP_PORT: "587"
+        SMTP_USERNAME: "user@test.com"
+        SMTP_PASSWORD: "password"
         FIRST_SUPERUSER: "admin@test.com"
         FIRST_SUPERUSER_PASSWORD: "password"
         USERS_OPEN_REGISTRATION: "True"
