@@ -23,7 +23,6 @@ pre-commit = "^3.3.3"
 opentelemetry-api = "^1.16.0"
 opentelemetry-sdk = "^1.16.0"
 opentelemetry-instrumentation-fastapi = "^0.39b0"
-opentelemetry-exporter-prometheus = "^1.16.0"
 opentelemetry-exporter-otlp = "^1.16.0"
 opentelemetry-instrumentation-asgi = "^0.39b0"
 

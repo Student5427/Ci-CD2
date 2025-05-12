@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from prometheus_client import make_asgi_app
 from opentelemetry import metrics
-from opentelemetry.exporter.prometheus import PrometheusMetricReader
 from opentelemetry.sdk.metrics import MeterProvider
 from opentelemetry.sdk.metrics.export import PeriodicExportingMetricReader
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
