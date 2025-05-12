@@ -23,18 +23,15 @@ item_router = APIRouter()
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     with tracer.start_as_current_span("read_items_operation") as parent_span:
         # Добавляем атрибуты к родительскому спану
-        parent_span.set_attributes({
-            "request.skip": skip,
-            "request.limit": limit
-        })
-        
+        parent_span.set_attributes({"request.skip": skip, "request.limit": limit})
+
         with tracer.start_as_current_span("db_query_items"):
             items = crud_item.get_items(db=db, skip=skip, limit=limit)
-            
+
         with tracer.start_as_current_span("process_results"):
             # Имитация обработки результатов
             processed_items = [item for item in items]
-            
+
         return processed_items
 
 
@@ -46,19 +43,17 @@ def read_user_items(
     db: Session = Depends(get_db),
 ):
     with tracer.start_as_current_span("read_user_items_operation") as parent_span:
-        parent_span.set_attributes({
-            "user.id": current_user.id,
-            "request.skip": skip,
-            "request.limit": limit
-        })
-        
+        parent_span.set_attributes(
+            {"user.id": current_user.id, "request.skip": skip, "request.limit": limit}
+        )
+
         with tracer.start_as_current_span("validate_parameters"):
             if limit > 100:
                 limit = 100
-                
+
         with tracer.start_as_current_span("db_query_user_items"):
             items = crud_item.get_user_items(db=db, user_id=current_user.id)
-            
+
         return items
 
 
