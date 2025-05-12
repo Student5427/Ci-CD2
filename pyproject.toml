@@ -4,7 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["xander <moroz070688@gmail.com>"]
 readme = "README.md"
-packages = [{include = "fastapi_boilerplate"}]
+packages = [{include = "app"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
