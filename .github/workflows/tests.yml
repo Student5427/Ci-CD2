@@ -58,7 +58,7 @@ jobs:
         SMTP_SERVER=smtp.test.com
         POSTGRES_USER=test_user
         POSTGRES_PASSWORD=test_pass
-        POSTGRES_HOST=localhost
+        POSTGRES_HOST=postgres
         POSTGRES_PORT=5432
         POSTGRES_DB=test_db
         EOF
@@ -66,7 +66,7 @@ jobs:
     - name: Wait for PostgreSQL
       run: |
         for i in {1..10}; do
-          if nc -z localhost 5432; then
+          if nc -z postgres 5432; then
             echo "PostgreSQL is ready"
             exit 0
           fi
@@ -78,6 +78,14 @@ jobs:
 
     - name: Apply migrations
       env:
+        SECRET_KEY: "dummy-secret-key-for-tests"
+        EMAIL_SENDER: "noreply@test.com"
+        SMTP_SERVER: "smtp.test.com"
+        POSTGRES_USER: "test_user"
+        POSTGRES_PASSWORD: "test_pass"
+        POSTGRES_HOST: "postgres"
+        POSTGRES_PORT: "5432"
+        POSTGRES_DB: "test_db"
         PYTHONPATH: "${{ github.workspace }}"
       run: |
         poetry run alembic upgrade head
@@ -89,7 +97,7 @@ jobs:
         SMTP_SERVER: "smtp.test.com"
         POSTGRES_USER: "test_user"
         POSTGRES_PASSWORD: "test_pass"
-        POSTGRES_HOST: "localhost"
+        POSTGRES_HOST: "postgres"
         POSTGRES_PORT: "5432"
         POSTGRES_DB: "test_db"
         ALGORITHM: "HS256"
