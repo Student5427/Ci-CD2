@@ -27,6 +27,7 @@ opentelemetry-sdk = "^1.16.0"
 opentelemetry-instrumentation-fastapi = "^0.39b0"
 opentelemetry-exporter-otlp = "^1.16.0"
 opentelemetry-instrumentation-asgi = "^0.39b0"
+prometheus-client = "^0.20.0"
 
 
 
