@@ -20,6 +20,14 @@ alembic = "^1.11.3"
 pytest = "^7.4.0"
 httpx = "^0.24.1"
 pre-commit = "^3.3.3"
+opentelemetry-api = "^1.16.0"
+opentelemetry-sdk = "^1.16.0"
+opentelemetry-instrumentation-fastapi = "^0.39b0"
+opentelemetry-exporter-prometheus = "^1.16.0"
+opentelemetry-exporter-otlp = "^1.16.0"
+opentelemetry-instrumentation-asgi = "^0.39b0"
+
+
 
 
 [build-system]

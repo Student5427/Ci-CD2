@@ -12,15 +12,22 @@ services:
     command: uvicorn app.main:app --port 8000 --host 0.0.0.0
     volumes:
       - .:/app
+    networks:
+      - my_app_network
     ports:
       - 8000:8000
+      - "9464:9464"  # Добавьте эту строку
     depends_on:
       postgres:
         condition: service_healthy
   postgres:
     image: postgres:15-alpine
+    networks:
+      - my_app_network
     ports:
       - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
       interval: 10s
@@ -30,3 +37,45 @@ services:
       - POSTGRES_USER=username
       - POSTGRES_PASSWORD=password
       - POSTGRES_DB=database
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - my_app_network
+    ports:
+      - "9090:9090"
+  
+  tempo:
+    image: grafana/tempo:latest
+    #command: ["-target=metrics-generator", "-config.file=/etc/tempo.yaml"]
+    command: ["-config.file=/etc/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo.yaml
+    networks:
+      - my_app_network
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "9411:9411"   # Zipkin
+      - "3200:3200"   # Tempo API
+
+  grafana:
+    image: grafana/grafana
+    networks:
+      - my_app_network
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - prometheus
+      - tempo
+
+volumes:
+  pgdata:
+  grafana_data:
+
+networks:
+  my_app_network:
+    driver: bridge
