@@ -1,6 +1,10 @@
 name: Run Tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   test:
@@ -16,9 +20,6 @@ jobs:
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-        # Добавляем volumes для сохранения данных между шагами
-        volumes:
-          - postgres_data:/var/lib/postgresql/data
 
     steps:
     - name: Checkout code
@@ -46,12 +47,21 @@ jobs:
     - name: Install dependencies
       run: |
         poetry lock --no-interaction
-        poetry install --sync --no-interaction
-        # Убедимся, что alembic установлен
-        poetry add alembic
+        poetry install --sync --no-interaction --with test
+        poetry show
 
     - name: Wait for PostgreSQL
-      run: sleep 5  # Даем PostgreSQL время для полного запуска
+      run: |
+        for i in {1..10}; do
+          if nc -z localhost 5432; then
+            echo "PostgreSQL is ready"
+            exit 0
+          fi
+          echo "Waiting for PostgreSQL... ($i/10)"
+          sleep 2
+        done
+        echo "PostgreSQL failed to start"
+        exit 1
 
     - name: Apply migrations
       env:
@@ -82,7 +92,3 @@ jobs:
         PYTHONPATH: "${{ github.workspace }}"
       run: |
         poetry run pytest --cov -v
-
-# Добавляем volumes для сохранения данных между шагами
-volumes:
-  postgres_data:
