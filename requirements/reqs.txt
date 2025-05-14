@@ -36,5 +36,5 @@ opentelemetry-instrumentation-fastapi==0.37b0
 opentelemetry-exporter-otlp==1.16.0
 opentelemetry-instrumentation-asgi==0.37b0
 prometheus-client==0.17.1
-opentelemetry-instrumentation-sqlalchemy==0.37b0  # Для трейсов SQL запросов
+opentelemetry-instrumentation-sqlalchemy==0.37b0
 tomli = "^2.0"
