@@ -15,16 +15,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install Render CLI
+      - name: Trigger Render Deploy
         run: |
-          npm install -g render-cli
-          echo "${{ secrets.RENDER_API_KEY }}" | render auth login --stdin
-
-      - name: Deploy to Render
-        run: |
-          render services deploy ${{ secrets.RENDER_SERVICE_NAME }} --wait
+          curl -X POST \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            -H "Accept: application/vnd.render+json; version=2021-09-16" \
+            "https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys"
