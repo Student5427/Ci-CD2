@@ -18,11 +18,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '18'
 
       - name: Install Render CLI
         run: |
-          npm install -g @renderinc/cli
+          npm install -g render-cli
           echo "${{ secrets.RENDER_API_KEY }}" | render auth login --stdin
 
       - name: Deploy to Render

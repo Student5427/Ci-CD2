@@ -16,7 +16,7 @@ services:
       - my_app_network
     ports:
       - 8000:8000
-      - "9464:9464"  # Добавьте эту строку ffffffff
+      - "9464:9464"  # Добавьте эту строку fffffffff
     depends_on:
       postgres:
         condition: service_healthy
