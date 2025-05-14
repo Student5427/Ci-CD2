@@ -30,6 +30,9 @@ jobs:
         tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fast_api_boiler:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
+        # Добавьте эти строки:
+        driver: docker-container  # Использует более мощный драйвер
+        platforms: linux/amd64   # Укажите платформу (если нужно)
     
     - name: Build and cache other images
       run: |
