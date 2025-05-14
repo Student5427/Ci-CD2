@@ -6,7 +6,7 @@ on:
     paths:
       - 'Dockerfile'
       - 'docker-compose.yml'
-      - 'requirements/**'  # Добавьте отслеживание папки requirements
+      - 'requirements/**' 
       - 'app/**'
 
 jobs:
@@ -35,4 +35,4 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
-          REQUIREMENTS_FILE=reqs.txt  # Явно передаем аргумент
+          REQUIREMENTS_FILE=reqs.txt
