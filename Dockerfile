@@ -1,7 +1,7 @@
 # pull the official docker image
 FROM python:3.11.1-slim
 
-ARG REQUIREMENTS_FILE
+ARG REQUIREMENTS_FILE=reqs.txt
 
 # set work directory
 WORKDIR /app
